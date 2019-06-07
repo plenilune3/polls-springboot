@@ -5,7 +5,6 @@ import kr.ac.jejunu.polls.domain.PostsRepository;
 import kr.ac.jejunu.polls.dto.posts.PostsDeleteRequestDto;
 import kr.ac.jejunu.polls.dto.posts.PostsSaveRequestDto;
 import kr.ac.jejunu.polls.dto.posts.PostsUpdateRequestDto;
-import org.hamcrest.core.IsNull;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,8 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 
