@@ -4,6 +4,7 @@ import kr.ac.jejunu.polls.domain.Posts;
 import kr.ac.jejunu.polls.domain.PostsRepository;
 import kr.ac.jejunu.polls.dto.posts.PostsDeleteRequestDto;
 import kr.ac.jejunu.polls.dto.posts.PostsSaveRequestDto;
+import kr.ac.jejunu.polls.dto.posts.PostsUpdateRequestDto;
 import org.hamcrest.core.IsNull;
 import org.junit.After;
 import org.junit.Test;
@@ -14,6 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 
@@ -73,6 +75,37 @@ public class PostServiceTest {
         boolean post = postsRepository.findAll().isEmpty();
 
         assertThat(post, is(true));
+    }
 
+    @Test
+    public void Dto_update_on_posts() {
+        PostsSaveRequestDto dto = PostsSaveRequestDto.builder()
+                .author("plenilune@jejunu.ac.kr")
+                .content("테스트")
+                .title("테스트 타이틀")
+                .build();
+
+        postsService.save(dto);
+
+        Posts posts = postsRepository.findAll().get(0);
+
+        assertThat(posts.getAuthor(), is(dto.getAuthor()));
+        assertThat(posts.getContent(), is(dto.getContent()));
+        assertThat(posts.getTitle(), is(dto.getTitle()));
+
+        PostsUpdateRequestDto dto1 = PostsUpdateRequestDto.builder()
+                .id(2l)
+                .author("수정")
+                .content("수정")
+                .title("수정")
+                .build();
+
+        postsService.update(dto1);
+
+        Posts posts1 = postsRepository.findAll().get(0);
+
+        assertThat(posts1.getAuthor(), is(dto1.getAuthor()));
+        assertThat(posts1.getContent(), is(dto1.getContent()));
+        assertThat(posts1.getTitle(), is(dto1.getTitle()));
     }
 }

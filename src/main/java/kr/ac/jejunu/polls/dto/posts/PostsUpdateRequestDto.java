@@ -9,14 +9,15 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PostsSaveRequestDto {
-
+public class PostsUpdateRequestDto {
+    private Long id;
     private String title;
     private String content;
     private String author;
 
     @Builder
-    public PostsSaveRequestDto(String title, String content, String author) {
+    public  PostsUpdateRequestDto(Long id, String title, String content, String author) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.author = author;
