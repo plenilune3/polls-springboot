@@ -18,7 +18,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class PostServiceTest {
+public class PostsServiceTest {
 
     @Autowired
     private PostsService postsService;

@@ -11,21 +11,19 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 
 @AllArgsConstructor
+@Transactional
 @Service
 public class PostsService {
     private PostsRepository postsRepository;
 
-    @Transactional
     public Long save(PostsSaveRequestDto dto) {
         return postsRepository.save(dto.toEntity()).getId();
     }
 
-    @Transactional
     public void delete(PostsDeleteRequestDto dto) {
         postsRepository.deleteById(dto.getId());
     }
 
-    @Transactional
     public void update(PostsUpdateRequestDto dto) {
         Posts posts = postsRepository.getOne(dto.getId());
         posts.setTitle(dto.getTitle());
@@ -33,4 +31,5 @@ public class PostsService {
         posts.setContent(dto.getContent());
         postsRepository.save(posts);
     }
+
 }

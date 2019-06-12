@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class WebController {
 
     @GetMapping("/")
-    public String main() {
-        return "main";
+    public String index() {
+        return "index";
     }
-
 }

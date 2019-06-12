@@ -2,10 +2,7 @@ package kr.ac.jejunu.polls.domain;
 
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -24,6 +21,10 @@ public class Posts extends BaseTimeEntity {
     private String content;
 
     private String author;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CATEFORY_ID")
+    private Category category;
 
     @Builder
     public Posts(Long id, String title, String content, String author) {
