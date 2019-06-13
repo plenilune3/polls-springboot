@@ -1,4 +1,4 @@
-package kr.ac.jejunu.polls.dto.posts;
+package kr.ac.jejunu.polls.dto.category;
 
 import kr.ac.jejunu.polls.domain.Category;
 import lombok.Builder;

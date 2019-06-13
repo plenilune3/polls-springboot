@@ -1,6 +1,6 @@
 package kr.ac.jejunu.polls.web;
 
-import kr.ac.jejunu.polls.dto.posts.CategorySaveRequestDto;
+import kr.ac.jejunu.polls.dto.category.CategorySaveRequestDto;
 import kr.ac.jejunu.polls.service.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;

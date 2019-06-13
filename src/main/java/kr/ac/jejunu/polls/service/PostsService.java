@@ -16,8 +16,8 @@ import javax.transaction.Transactional;
 public class PostsService {
     private PostsRepository postsRepository;
 
-    public Long save(PostsSaveRequestDto dto) {
-        return postsRepository.save(dto.toEntity()).getId();
+    public void save(PostsSaveRequestDto dto) {
+        postsRepository.save(dto.toEntity());
     }
 
     public void delete(PostsDeleteRequestDto dto) {
@@ -30,6 +30,10 @@ public class PostsService {
         posts.setAuthor(dto.getAuthor());
         posts.setContent(dto.getContent());
         postsRepository.save(posts);
+    }
+
+    public Posts createPost(Posts posts) {
+        return postsRepository.save(posts);
     }
 
 }

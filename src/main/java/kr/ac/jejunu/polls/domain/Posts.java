@@ -11,7 +11,7 @@ import javax.persistence.*;
 public class Posts extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(length = 500, nullable = false)
@@ -22,15 +22,23 @@ public class Posts extends BaseTimeEntity {
 
     private String author;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CATEFORY_ID")
+    @ManyToOne(targetEntity = Category.class, fetch = FetchType.EAGER)
+    @JoinColumn(name="category_id")
     private Category category;
 
     @Builder
-    public Posts(Long id, String title, String content, String author) {
-        this.id = id;
+    public Posts(String title, String content,
+                 String author, Category category) {
         this.title = title;
         this.content = content;
         this.author = author;
+        this.category = category;
     }
+
+    @Override
+    public String toString() {
+        String result = "[post_" + id + "] " + title + " " + author + " " + content;
+        return result;
+    }
+
 }

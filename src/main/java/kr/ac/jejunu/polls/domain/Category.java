@@ -12,22 +12,24 @@ import java.util.List;
 
 @NoArgsConstructor
 @Getter
-@Setter
 @Entity
 public class Category extends BaseTimeEntity{
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String name;
 
-    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
-    private List<Posts> posts = new ArrayList<>();
-
     @Builder
-    public Category(Long id, String name) {
-        this.id = id;
+    public Category(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        String result = "[category_" + id + "] " + name;
+        return result;
+    }
+
 }

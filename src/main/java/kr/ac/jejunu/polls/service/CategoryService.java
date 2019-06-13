@@ -1,7 +1,7 @@
 package kr.ac.jejunu.polls.service;
 
 import kr.ac.jejunu.polls.domain.CategoryRepository;
-import kr.ac.jejunu.polls.dto.posts.CategorySaveRequestDto;
+import kr.ac.jejunu.polls.dto.category.CategorySaveRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package kr.ac.jejunu.polls.dto.posts;
+package kr.ac.jejunu.polls.dto.category;
 
 public class CategoryUpdateRequestDto {
 }
