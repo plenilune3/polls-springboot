@@ -16,13 +16,14 @@ import java.util.List;
 public class Category extends BaseTimeEntity{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
     @Builder
-    public Category(String name) {
+    public Category(Long id, String name) {
+        this.id = id;
         this.name = name;
     }
 

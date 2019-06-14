@@ -29,11 +29,8 @@ public class PostsService {
         posts.setTitle(dto.getTitle());
         posts.setAuthor(dto.getAuthor());
         posts.setContent(dto.getContent());
+        posts.setCategory(dto.getCategory());
         postsRepository.save(posts);
-    }
-
-    public Posts createPost(Posts posts) {
-        return postsRepository.save(posts);
     }
 
 }
