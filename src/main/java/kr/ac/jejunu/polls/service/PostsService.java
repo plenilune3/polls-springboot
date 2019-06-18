@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @AllArgsConstructor
 @Transactional
@@ -16,8 +17,9 @@ import javax.transaction.Transactional;
 public class PostsService {
     private PostsRepository postsRepository;
 
-    public void save(PostsSaveRequestDto dto) {
-        postsRepository.save(dto.toEntity());
+    public Posts save(PostsSaveRequestDto dto) {
+        Posts posts = postsRepository.save(dto.toEntity());
+        return posts;
     }
 
     public void delete(PostsDeleteRequestDto dto) {
@@ -31,6 +33,10 @@ public class PostsService {
         posts.setContent(dto.getContent());
         posts.setCategory(dto.getCategory());
         postsRepository.save(posts);
+    }
+
+    public List<Posts> read() {
+        return postsRepository.findAll();
     }
 
 }

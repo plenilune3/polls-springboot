@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @Transactional
@@ -15,14 +16,18 @@ import javax.transaction.Transactional;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
 
-    public Long save(CategorySaveRequestDto dto) {
-        return categoryRepository.save(dto.toEntity()).getId();
+    public Category save(CategorySaveRequestDto dto) {
+        Category category = categoryRepository.save(dto.toEntity());
+        return category;
     }
 
     public Category find(CategoryFindRequestDto dto) {
         return categoryRepository.findById(dto.getId()).get();
     }
 
+    public List<Category> read() {
+        return categoryRepository.findAll();
+    }
     public void delete() {
 
     }

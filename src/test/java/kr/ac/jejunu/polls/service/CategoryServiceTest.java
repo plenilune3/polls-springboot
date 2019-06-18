@@ -38,6 +38,9 @@ public class CategoryServiceTest {
 
     @After
     public void cleanup() {
+        categoryRepository.deleteAll();
+        ;
+        postsRepository.deleteAll();
     }
 
     @Test

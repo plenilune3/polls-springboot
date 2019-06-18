@@ -7,6 +7,7 @@ import kr.ac.jejunu.polls.dto.posts.PostsSaveRequestDto;
 import kr.ac.jejunu.polls.dto.posts.PostsUpdateRequestDto;
 import kr.ac.jejunu.polls.service.PostsService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,9 +27,10 @@ public class WebRestController {
         return "Hello, World!";
     }
 
-    @PostMapping("/posts")
-    public void savePosts(@RequestBody PostsSaveRequestDto dto) {
-        postsRepository.save(dto.toEntity());
+    @PostMapping(value = "/posts", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public Posts savePosts(@RequestBody PostsSaveRequestDto dto) {
+        Posts posts = postsService.save(dto);
+        return posts;
     }
 
     @PostMapping("/delete")
