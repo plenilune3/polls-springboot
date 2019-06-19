@@ -2,12 +2,16 @@ package kr.ac.jejunu.polls.service;
 
 import jnr.ffi.Struct;
 import kr.ac.jejunu.polls.contract.Greeter;
+import org.apache.logging.log4j.message.StringFormattedMessage;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.web3j.abi.FunctionEncoder;
-import org.web3j.abi.datatypes.Type;
+import org.web3j.abi.FunctionReturnDecoder;
+import org.web3j.abi.TypeReference;
+import org.web3j.abi.datatypes.*;
+import org.web3j.abi.datatypes.generated.Uint8;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
@@ -17,10 +21,7 @@ import org.web3j.protocol.admin.methods.response.PersonalUnlockAccount;
 import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.request.Transaction;
-import org.web3j.protocol.core.methods.response.EthGetTransactionCount;
-import org.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
-import org.web3j.protocol.core.methods.response.EthSendTransaction;
-import org.web3j.protocol.core.methods.response.Web3ClientVersion;
+import org.web3j.protocol.core.methods.response.*;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.gas.ContractGasProvider;
 import org.web3j.tx.gas.DefaultGasProvider;
@@ -31,7 +32,7 @@ import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.util.Arrays;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -91,6 +92,19 @@ public class Web3ConnectionTest {
         }
 
         System.out.println(greeter.getContractAddress());
+
+        Greeter greeter1 = Greeter.load(greeter.getContractAddress(),
+                web3,
+                credentials, new DefaultGasProvider());
+        String result = null;
+        try {
+            result = greeter1.greet().send();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(result);
     }
 
     @Test
@@ -101,9 +115,10 @@ public class Web3ConnectionTest {
                     "0xcfd8cbe5da3002b52c650ce1302e10c6d1be644e",
                     "pass0",
                     BigInteger.valueOf(60)).send();
-            String encodeConstructor = FunctionEncoder.encodeConstructor(Arrays.asList(new org.web3j.abi.datatypes.Utf8String("hi")));
+            String encodeConstructor = FunctionEncoder.encodeConstructor(Arrays.asList(new Uint8(3)));
             ethGetTransactionCount = web3.ethGetTransactionCount(
-                    "0xcfd8cbe5da3002b52c650ce1302e10c6d1be644e", DefaultBlockParameterName.LATEST
+                    "0xcfd8cbe5da3002b52c650ce1302e10c6d1be644e",
+                    DefaultBlockParameterName.LATEST
                     ).send();
             BigInteger nonce = ethGetTransactionCount.getTransactionCount();
             Transaction transaction = Transaction.createContractTransaction(
@@ -148,6 +163,135 @@ public class Web3ConnectionTest {
 
     @Test
     public void Contract_call() {
+        EthCall response = null;
+
+        Function function = new Function(
+                "greet",
+                Arrays.asList(),
+                Arrays.asList(new TypeReference<Utf8String>() {
+                }));
+
+        String encodedFunction = FunctionEncoder.encode(function);
+        try {
+            response = web3.ethCall(
+                    Transaction.createEthCallTransaction(
+                            "0xcfd8cbe5da3002b52c650ce1302e10c6d1be644e",
+                            "0x139040faf886ce386349446e004f9447b3ef8f58",
+                            encodedFunction),
+                    DefaultBlockParameterName.LATEST).sendAsync().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        List<Type> someTypes = FunctionReturnDecoder.decode(
+                response.getValue(), function.getOutputParameters());
+
+        System.out.println(someTypes.get(0));
+
+    }
+
+    @Test
+    public void Contract_transaction() {
+
+        try {
+            ethGetTransactionCount = web3.ethGetTransactionCount(
+                    "0xcfd8cbe5da3002b52c650ce1302e10c6d1be644e", DefaultBlockParameterName.LATEST
+            ).send();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        BigInteger nonce = ethGetTransactionCount.getTransactionCount();
+        Function function = new Function(
+                "giveRightToVote",
+                Arrays.asList(new Address("0xbbf516b609c9b0d6474c77b8758bd93a1e15eb76")),
+                Collections.<TypeReference<?>>emptyList());
+
+        String encodedFunction = FunctionEncoder.encode(function);
+        Transaction transaction = Transaction.createFunctionCallTransaction(
+                "0xcfd8cbe5da3002b52c650ce1302e10c6d1be644e",
+                nonce,
+                BigInteger.valueOf(43382), BigInteger.valueOf(3000000),
+                "0x86afaa19c923d2fb1dcfe24ec03d28be3843afe3",
+                encodedFunction);
+
+        try {
+            transactionResponse = web3.ethSendTransaction(transaction).send();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String transactionHash = transactionResponse.getTransactionHash();
+        System.out.println(transactionHash);
+
+
+    }
+
+    @Test
+    public void vote() throws IOException, ExecutionException, InterruptedException {
+
+        personalUnlockAccount = admin.personalUnlockAccount(
+                "0xbbf516b609c9b0d6474c77b8758bd93a1e15eb76",
+                "pass2",
+                BigInteger.valueOf(60)).send();
+
+        ethGetTransactionCount = web3.ethGetTransactionCount(
+                "0xbbf516b609c9b0d6474c77b8758bd93a1e15eb76",
+                DefaultBlockParameterName.LATEST
+        ).send();
+
+        BigInteger nonce = ethGetTransactionCount.getTransactionCount();
+        Function function = new Function(
+                "vote",
+                Arrays.asList(new Uint8(2)),
+                Collections.<TypeReference<?>>emptyList());
+
+        String encodedFunction = FunctionEncoder.encode(function);
+        Transaction transaction = Transaction.createFunctionCallTransaction(
+                "0xbbf516b609c9b0d6474c77b8758bd93a1e15eb76",
+                nonce,
+                BigInteger.valueOf(43382), BigInteger.valueOf(3000000),
+                "0x86afaa19c923d2fb1dcfe24ec03d28be3843afe3",
+                encodedFunction);
+
+        transactionResponse = web3.ethSendTransaction(transaction).sendAsync().get();
+
+        String transactionHash = transactionResponse.getTransactionHash();
+        System.out.println(transactionHash);
+
+    }
+
+    @Test
+    public void winningProposal() {
+
+        Function function = new Function(
+                "winningProposal",
+                Arrays.asList(),
+                Arrays.asList(new TypeReference<Uint8>() {
+                }));
+
+        String encodedFunction = FunctionEncoder.encode(function);
+
+        EthCall response = null;
+
+        try {
+            response = web3.ethCall(
+                    Transaction.createEthCallTransaction(
+                            "0xbbf516b609c9b0d6474c77b8758bd93a1e15eb76",
+                            "0x86afaa19c923d2fb1dcfe24ec03d28be3843afe3",
+                            encodedFunction),
+                    DefaultBlockParameterName.LATEST).sendAsync().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        List<Type> someTypes = FunctionReturnDecoder.decode(
+                response.getValue(), function.getOutputParameters());
+
+        System.out.println(someTypes.get(0).getValue());
 
     }
 
