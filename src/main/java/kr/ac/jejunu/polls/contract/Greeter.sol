@@ -4,10 +4,10 @@ contract Mortal {
     /* Define variable owner of the type address */
     address owner;
 
-    /* This constructor is executed at initialization and sets the owner of the contract */
+    /* This constructor is executed at initialization and sets the owner of the poll */
     constructor() public { owner = msg.sender; }
 
-    /* Function to recover the funds on the contract */
+    /* Function to recover the funds on the poll */
     function kill() public { if (msg.sender == owner) selfdestruct(msg.sender); }
 }
 
@@ -15,7 +15,7 @@ contract Greeter is Mortal {
     /* Define variable greeting of the type string */
     string greeting;
 
-    /* This runs when the contract is executed */
+    /* This runs when the poll is executed */
     constructor(string memory _greeting) public {
         greeting = _greeting;
     }

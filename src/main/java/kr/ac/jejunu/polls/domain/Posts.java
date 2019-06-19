@@ -24,17 +24,20 @@ public class Posts extends BaseTimeEntity {
 
     private String author;
 
+    private String address;
+
     @ManyToOne(targetEntity = Category.class, fetch = FetchType.EAGER)
     @JoinColumn(name="category_id")
     private Category category;
 
     @Builder
     public Posts(String title, String content,
-                 String author, Category category) {
+                 String author, Category category, String address) {
         this.title = title;
         this.content = content;
         this.author = author;
         this.category = category;
+        this.address = address;
     }
 
     @Override

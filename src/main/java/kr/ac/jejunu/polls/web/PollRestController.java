@@ -1,8 +1,6 @@
 package kr.ac.jejunu.polls.web;
 
-import kr.ac.jejunu.polls.dto.contract.ContractCreateRequestDto;
-import kr.ac.jejunu.polls.dto.contract.CreateAccountRequestDto;
-import kr.ac.jejunu.polls.dto.contract.UnlockAccountRequestDto;
+import kr.ac.jejunu.polls.dto.poll.*;
 import kr.ac.jejunu.polls.service.PollService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/polls")
-public class ContractRestController {
+public class PollRestController {
 
     private PollService pollService;
 
@@ -27,9 +25,24 @@ public class ContractRestController {
         return pollService.createAccount(dto);
     }
 
-    @PostMapping(value = "/createcontract")
-    public String createContract(@RequestBody ContractCreateRequestDto dto) {
-        return pollService.createContract(dto);
+    @PostMapping(value = "/createpoll")
+    public String createPoll(@RequestBody CreatePollRequestDto dto) {
+        return pollService.createPoll(dto);
+    }
+
+    @PostMapping(value = "/giverighttovote")
+    public String giveRightToVote(@RequestBody GiveRightToVoteRequestDto dto) {
+        return pollService.giveRightToVote(dto);
+    }
+
+    @PostMapping(value = "/vote")
+    public String vote(@RequestBody VoteRequestDto dto) {
+        return pollService.vote(dto);
+    }
+
+    @PostMapping(value = "/winningproposal")
+    public String winnerProposal(@RequestBody WinnerRequestDto dto) {
+        return pollService.winningProposal(dto);
     }
 }
 

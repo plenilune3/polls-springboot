@@ -18,14 +18,17 @@ public class PostsSaveRequestDto {
     private String content;
     private String author;
     private Category category;
+    private String address;
 
     @Builder
     public PostsSaveRequestDto(String title, String content,
-                               String author, Category category) {
+                               String author, Category category,
+                               String address) {
         this.title = title;
         this.content = content;
         this.author = author;
         this.category = category;
+        this.address = address;
     }
 
     public Posts toEntity() {
@@ -35,6 +38,7 @@ public class PostsSaveRequestDto {
                 .content(content)
                 .author(author)
                 .category(category)
+                .address(address)
                 .build();
     }
 }

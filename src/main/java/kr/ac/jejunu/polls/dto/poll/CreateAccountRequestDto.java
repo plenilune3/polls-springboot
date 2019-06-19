@@ -1,4 +1,4 @@
-package kr.ac.jejunu.polls.dto.contract;
+package kr.ac.jejunu.polls.dto.poll;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

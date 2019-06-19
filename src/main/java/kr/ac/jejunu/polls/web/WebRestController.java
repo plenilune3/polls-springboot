@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -41,6 +42,11 @@ public class WebRestController {
     @PostMapping("/update")
     public void updatePosts(@RequestBody PostsUpdateRequestDto dto) {
         postsService.update(dto);
+    }
+
+    @PostMapping(value = "/read", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public List<Posts> readPosts() {
+        return postsService.read();
     }
 
 
