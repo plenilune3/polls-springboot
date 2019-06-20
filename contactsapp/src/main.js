@@ -8,7 +8,6 @@ import ES6Promise from 'es6-promise'
 ES6Promise.polyfill()
 
 Vue.prototype.$axios = axios;
-
 Vue.config.productionTip = false
 
 new Vue({

@@ -1,7 +1,7 @@
 <template>
     <div id="container">
         <div class="page-header">
-            <h1 class="text-center">연락처 관리 애플리케이션</h1>
+            <h1 class="text-center">블록체인을 활용한 전자투표</h1>
             <p>(Dynamic Component + EventBus + Axios) </p>
         </div>
         <component :is="currentView" :contact="contact"></component>
@@ -23,7 +23,8 @@
         data: function () {
             return {
                 currentView: null,
-                contact: {no: 0, name: '', tel: '', address: '', photo: ''},
+                contact: {category: {id: ''}, title: '', author: '', content: '', created_date: ''},
+                contacts: [],
                 contactlist: {
                     pageno: 1, pagesize: CONF.PAGESIZE, totalcount: 0, contacts: []
                 }
@@ -72,14 +73,16 @@
                 this.fetchContacts();
             },
             fetchContacts: function () {
-                this.$axios.get(CONF.FETCH, {
+                this.$axios.post(CONF.FETCH, {
                     params: {
                         pageno: this.contactlist.pageno,
                         pagesize: this.contactlist.pagesize
                     }
                 })
                     .then((response) => {
-                        this.contactlist = response.data;
+                        console.log(response.data)
+                        this.contacts = response.data
+                        this.contactlist.contacts = this.contacts
                     })
                     .catch((ex) => {
                         console.log('fetchContacts failed', ex);
@@ -90,8 +93,10 @@
                 console.log("add!!")
                 this.$axios.post(CONF.ADD, contact)
                     .then((response) => {
-                        if (response.data.status === "success") {
+                        console.log(response.status)
+                        if (response.status == "200") {
                             this.contactlist.pageno = 1;
+                            console.log(response.data);
                             this.fetchContacts();
                         } else {
                             console.log('연락처 추가 실패 : ' + response.data.message);
@@ -102,9 +107,9 @@
                     })
             },
             updateContact: function (contact) {
-                this.$axios.put(CONF.UPDATE.replace("${no}", contact.no), contact)
+                this.$axios.post(CONF.UPDATE, contact)
                     .then((response) => {
-                        if (response.data.status === "success") {
+                        if (response.status == "200") {
                             this.fetchContacts();
                         } else {
                             console.log('연락처 변경 실패 : ' + response.data.message);
@@ -115,8 +120,9 @@
                     })
             },
             fetchContactOne: function (no) {
-                this.$axios.get(CONF.FETCH_ONE.replace("${no}", no))
-                    .then((response) => {
+                this.$axios.post(CONF.FETCH_ONE, {
+                    id: no
+                }).then((response) => {
                         this.contact = response.data;
                     })
                     .catch((ex) => {
@@ -124,9 +130,12 @@
                     })
             },
             deleteContact: function (no) {
-                this.$axios.delete(CONF.DELETE.replace("${no}", no))
+                this.$axios.post(CONF.DELETE, {
+                    id: no
+                })
                     .then((response) => {
-                        if (response.data.status === "success") {
+                        console.log(response.status)
+                        if (response.status == "200") {
                             this.fetchContacts();
                         } else {
                             console.log('연락처 삭제 실패 : ' + response.data.message);
