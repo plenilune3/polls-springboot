@@ -24,7 +24,7 @@ public class Posts extends BaseTimeEntity {
 
     private String author;
 
-    private String address;
+    private String pollAddress;
 
     @ManyToOne(targetEntity = Category.class, fetch = FetchType.EAGER)
     @JoinColumn(name="category_id")
@@ -32,12 +32,12 @@ public class Posts extends BaseTimeEntity {
 
     @Builder
     public Posts(String title, String content,
-                 String author, Category category, String address) {
+                 String author, Category category, String pollAddress) {
         this.title = title;
         this.content = content;
         this.author = author;
         this.category = category;
-        this.address = address;
+        this.pollAddress = pollAddress;
     }
 
     @Override

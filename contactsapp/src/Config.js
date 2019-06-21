@@ -14,5 +14,9 @@ export default {
     //연락처 삭제
     DELETE: BASE_URL + "/delete",
     //연락처 사진 업로드->변경
-    UPDATE_PHOTO: BASE_URL + "/contacts/${no}/photo"
+    UPDATE_PHOTO: BASE_URL + "/contacts/${no}/photo",
+    //투표 생성
+    POLLCREATE: BASE_URL + "/polls/createpoll",
+    //투표 하기
+    POLLVOTE: BASE_URL + "/polls/vote"
 }

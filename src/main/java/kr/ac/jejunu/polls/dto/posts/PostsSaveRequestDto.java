@@ -18,17 +18,17 @@ public class PostsSaveRequestDto {
     private String content;
     private String author;
     private Category category;
-    private String address;
+    private String pollAddress;
 
     @Builder
     public PostsSaveRequestDto(String title, String content,
                                String author, Category category,
-                               String address) {
+                               String pollAddress) {
         this.title = title;
         this.content = content;
         this.author = author;
         this.category = category;
-        this.address = address;
+        this.pollAddress = pollAddress;
     }
 
     public Posts toEntity() {
@@ -38,7 +38,7 @@ public class PostsSaveRequestDto {
                 .content(content)
                 .author(author)
                 .category(category)
-                .address(address)
+                .pollAddress(pollAddress)
                 .build();
     }
 }

@@ -4,57 +4,66 @@
             <h1 class="text-center">블록체인을 활용한 전자투표</h1>
             <p>(Dynamic Component + EventBus + Axios) </p>
         </div>
-        <component :is="currentView" :contact="contact"></component>
-        <contactList :contactlist="contactlist"></contactList>
+        <component :is="currentView" :post="post"></component>
+        <postsList :postslist="postslist"></postsList>
     </div>
 </template>
 
 <script>
-    import ContactList from './components/ContactList';
-    import AddContact from './components/AddContact';
-    import UpdateContact from './components/UpdateContact';
+    import PostsList from './components/PostsList';
+    import AddPosts from './components/AddPosts';
+    import UpdatePosts from './components/UpdatePosts';
     import UpdatePhoto from './components/UpdatePhoto';
+    import ReadPosts from './components/ReadPosts'
+    import VotePosts from './components/VotePosts'
     import CONF from './Config.js';
     import eventBus from './EventBus.js';
 
     export default {
         name: 'app',
-        components: {ContactList, AddContact, UpdateContact, UpdatePhoto},
+        components: {PostsList, AddPosts, UpdatePosts, UpdatePhoto, ReadPosts, VotePosts},
         data: function () {
             return {
                 currentView: null,
-                contact: {category: {id: ''}, title: '', author: '', content: '', created_date: ''},
-                contacts: [],
-                contactlist: {
-                    pageno: 1, pagesize: CONF.PAGESIZE, totalcount: 0, contacts: []
+                post: {category: {id: ''}, title: '', author: '', content: '', pollAddress: ''},
+                poll: {fromAddress: '', password: '', toAddress: '', pollAddress: '', vote: ''},
+                posts: [],
+                postslist: {
+                    pageno: 1, pagesize: CONF.PAGESIZE, totalcount: 0, posts: []
                 }
             }
         },
         mounted: function () {
-            this.fetchContacts();
+            this.fetchPosts();
             eventBus.$on("cancel", () => {
                 this.currentView = null;
             });
-            eventBus.$on("addSubmit", (contact) => {
+            eventBus.$on("addSubmit", (set) => {
                 this.currentView = null;
-                this.addContact(contact);
+                console.log(set.poll)
+                this.addPosts(set)
             });
-            eventBus.$on("updateSubmit", (contact) => {
+            eventBus.$on("updateSubmit", (post) => {
                 this.currentView = null;
-                this.updateContact(contact);
+                this.updatePosts(post);
             });
-            eventBus.$on("addContactForm", () => {
-                this.currentView = 'addContact';
+            eventBus.$on("pollSubmit", (set) => {
+                console.log(set)
+                this.currentView = null;
+                this.addPoll(set)
+            })
+            eventBus.$on("addPostsForm", () => {
+                this.currentView = 'addPosts';
             });
-            eventBus.$on("editContactForm", (no) => {
-                this.fetchContactOne(no)
-                this.currentView = 'updateContact';
+            eventBus.$on("editPostsForm", (no) => {
+                this.fetchPostsOne(no)
+                this.currentView = 'updatePosts';
             });
-            eventBus.$on("deleteContact", (no) => {
-                this.deleteContact(no);
+            eventBus.$on("deletePosts", (no) => {
+                this.deletePosts(no);
             });
             eventBus.$on("editPhoto", (no) => {
-                this.fetchContactOne(no)
+                this.fetchPostsOne(no)
                 this.currentView = 'updatePhoto';
             });
             eventBus.$on("updatePhoto", (no, file) => {
@@ -63,80 +72,121 @@
                 }
                 this.currentView = null;
             });
+            eventBus.$on("readPostsForm", (no) => {
+                this.fetchPostsOne(no);
+                this.currentView = 'readPosts';
+            });
+            eventBus.$on("votePostsForm", (no) => {
+                this.fetchPostsOne(no);
+                this.currentView = 'votePosts'
+            })
             eventBus.$on("pageChanged", (page) => {
                 this.pageChanged(page);
-            })
+            });
         },
         methods: {
             pageChanged: function (page) {
-                this.contactlist.pageno = page;
-                this.fetchContacts();
+                this.postslist.pageno = page;
+                this.fetchPosts();
             },
-            fetchContacts: function () {
+            fetchPosts: function () {
                 this.$axios.post(CONF.FETCH, {
                     params: {
-                        pageno: this.contactlist.pageno,
-                        pagesize: this.contactlist.pagesize
+                        pageno: this.postslist.pageno,
+                        pagesize: this.postslist.pagesize
                     }
                 })
                     .then((response) => {
-                        console.log(response.data)
-                        this.contacts = response.data
-                        this.contactlist.contacts = this.contacts
+                        this.posts = response.data
+                        this.postslist.posts = this.posts
                     })
                     .catch((ex) => {
-                        console.log('fetchContacts failed', ex);
-                        this.contactlist.contacts = [];
+                        console.log('fetchPosts failed', ex);
+                        this.postslist.posts = [];
                     })
             },
-            addContact: function (contact) {
+            addPosts: async function (set) {
                 console.log("add!!")
-                this.$axios.post(CONF.ADD, contact)
+                await this.$axios.post(CONF.POLLCREATE, {
+                    fromAddress: set.poll.fromAddress,
+                    password: set.poll.password,
+                    numProposals: set.poll.numProposals
+                }).then((response) => {
+                    console.log(response.status)
+                    if (response.status == "200") {
+                        console.log(response.data)
+                        set.post.pollAddress = response.data
+                    } else {
+                        console.log('투표 생성 실패 : ' + response.data.message)
+                    }
+                }).catch((ex) => {
+                    console.log('fail : ', ex)
+                });
+                await this.$axios.post(CONF.ADD, set.post)
                     .then((response) => {
                         console.log(response.status)
                         if (response.status == "200") {
-                            this.contactlist.pageno = 1;
+                            this.postslist.pageno = 1;
                             console.log(response.data);
-                            this.fetchContacts();
+                            this.fetchPosts();
                         } else {
                             console.log('연락처 추가 실패 : ' + response.data.message);
                         }
                     })
                     .catch((ex) => {
-                        console.log('addContact failed : ', ex);
-                    })
+                        console.log('addPosts failed : ', ex);
+                    });
+
             },
-            updateContact: function (contact) {
-                this.$axios.post(CONF.UPDATE, contact)
+            addPoll: async function (set) {
+                await this.$axios.post(CONF.POLLVOTE, {
+                    fromAddress: set.poll.fromAddress,
+                    password: set.poll.password,
+                    pollAddress: set.post.pollAddress,
+                    vote: set.poll.vote
+                }).then((response) => {
+                    if (response.status == "200") {
+                        console.log(response.data)
+                        this.fetchPosts()
+                    } else {
+                        console.log('투표 실패 : ' + response.data.message)
+                    }
+                }).catch((ex) => {
+                    console.log('addPoll failed : ', ex)
+                })
+            },
+            updatePosts: function (post) {
+                this.$axios.post(CONF.UPDATE, post)
                     .then((response) => {
                         if (response.status == "200") {
-                            this.fetchContacts();
+                            this.fetchPosts();
                         } else {
                             console.log('연락처 변경 실패 : ' + response.data.message);
                         }
                     })
                     .catch((ex) => {
-                        console.log('updateContact failed : ', ex);
+                        console.log('updatePosts failed : ', ex);
                     })
             },
-            fetchContactOne: function (no) {
+            fetchPostsOne: function (no) {
                 this.$axios.post(CONF.FETCH_ONE, {
                     id: no
                 }).then((response) => {
-                        this.contact = response.data;
+                    console.log(response.data)
+                    this.post = response.data;
                     })
                     .catch((ex) => {
-                        console.log('fetchContactOne failed', ex);
+                        console.log('fetchPostsOne failed', ex);
                     })
             },
-            deleteContact: function (no) {
+            deletePosts: function (no) {
                 this.$axios.post(CONF.DELETE, {
                     id: no
                 })
                     .then((response) => {
                         console.log(response.status)
                         if (response.status == "200") {
-                            this.fetchContacts();
+                            this.fetchPosts();
                         } else {
                             console.log('연락처 삭제 실패 : ' + response.data.message);
                         }
@@ -151,7 +201,7 @@
                 this.$axios.post(CONF.UPDATE_PHOTO.replace("${no}", no), data)
                     .then((response) => {
                         if (response.data.status === "success") {
-                            this.fetchContacts();
+                            this.fetchPosts();
                         } else {
                             console.log('연락처 사진 변경 실패 : ' + response.data.message);
                         }

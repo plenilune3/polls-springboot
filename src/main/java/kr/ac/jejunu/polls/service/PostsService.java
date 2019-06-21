@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @Transactional
@@ -35,8 +36,15 @@ public class PostsService {
         postsRepository.save(posts);
     }
 
-    public List<Posts> read() {
+    public List<Posts> readPosts() {
         return postsRepository.findAll();
     }
 
+    public void deleteById(PostsDeleteRequestDto dto) {
+        postsRepository.deleteById(dto.getId());
+    }
+
+    public Optional<Posts> read(PostsDeleteRequestDto dto) {
+        return postsRepository.findById(dto.getId());
+    }
 }

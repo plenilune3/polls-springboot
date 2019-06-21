@@ -49,7 +49,7 @@
             }
         },
         methods: {
-            fetchContacts: function () {
+            fetchPosts: function () {
                 this.$axios({
                     method: 'GET',
                     url: '/api/contacts',
@@ -63,7 +63,7 @@
                         console.log("ERROR!!!! : ", ex);
                     })
             },
-            addContact: function () {
+            addPosts: function () {
                 this.$axios.post('/api/contacts', {name: this.name, tel: this.tel, address: this.address})
                     .then((response) => {
                         console.log(response);
@@ -74,14 +74,14 @@
                         console.log("ERROR!!!! : ", ex);
                     })
             },
-            fetchContactOne: function () {
+            fetchPostsOne: function () {
                 this.$axios.get('/api/contacts/' + this.no)
                     .then((response) => {
                         console.log(response);
                         this.result = response.data;
                     })
             },
-            updateContact: function () {
+            updatePosts: function () {
                 this.$axios.put('/api/contacts/' + this.no, {name: this.name, tel: this.tel, address: this.address})
                     .then((response) => {
                         console.log(response);
@@ -94,7 +94,7 @@
                         console.log("ERROR!!!! : ", ex);
                     })
             },
-            deleteContact: function () {
+            deletePosts: function () {
                 this.$axios.delete('/api/contacts/' + this.no)
                     .then((response) => {
                         console.log(response);

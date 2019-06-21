@@ -8,14 +8,12 @@ import kr.ac.jejunu.polls.dto.posts.PostsUpdateRequestDto;
 import kr.ac.jejunu.polls.service.PostsService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin
 @RestController
 @AllArgsConstructor
 public class WebRestController {
@@ -34,19 +32,24 @@ public class WebRestController {
         return posts;
     }
 
-    @PostMapping("/delete")
+    @PostMapping(value = "/delete")
     public void deletePosts(@RequestBody PostsDeleteRequestDto dto) {
-        postsRepository.deleteById(dto.getId());
+        postsService.deleteById(dto);
     }
 
-    @PostMapping("/update")
+    @PostMapping(value = "/update")
     public void updatePosts(@RequestBody PostsUpdateRequestDto dto) {
         postsService.update(dto);
     }
 
-    @PostMapping(value = "/read", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/list", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public List<Posts> readPosts() {
-        return postsService.read();
+        return postsService.readPosts();
+    }
+
+    @PostMapping(value = "/read")
+    public Optional<Posts> read(@RequestBody PostsDeleteRequestDto dto) {
+        return postsService.read(dto);
     }
 
 

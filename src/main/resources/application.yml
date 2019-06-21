@@ -5,3 +5,6 @@ spring:
   thymeleaf:
     prefix: classpath:/static/
 
+server:
+  port: 3000
+
