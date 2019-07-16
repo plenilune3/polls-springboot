@@ -2,7 +2,7 @@
     <div>
         <p class="addnew">
             <button class="btn btn-primary" @click="addPosts()">
-                새로운 연락처 추가하기
+                새로운 투표 추가하기
             </button>
         </p>
         <div id="example">
@@ -13,7 +13,7 @@
                     <th>제목</th>
                     <th>게시자</th>
                     <th>게시일</th>
-                    <th>투표/편집/삭제</th>
+                    <th>투표/결과/편집/삭제</th>
                 </tr>
                 </thead>
                 <tbody id="posts">
@@ -25,6 +25,9 @@
                     <td>
                         <button class="btn btn-primary"
                                 @click="votePosts(post.id)">투표
+                        </button>
+                        <button class="btn btn-primary"
+                                @click="resultPosts(post.pollAddress)">결과
                         </button>
                         <button class="btn btn-primary"
                                 @click="editPosts(post.id)">편집
@@ -53,6 +56,7 @@
 <script>
     import eventBus from '../EventBus';
     import Paginate from 'vuejs-paginate';
+    import Config from "../Config";
 
     export default {
         name: 'postsList',
@@ -88,6 +92,20 @@
                 if (confirm("정말로 삭제하시겠습니까?") == true) {
                     eventBus.$emit('deletePosts', no);
                 }
+            },
+            resultPosts: async function (pollAddress) {
+                await this.$axios.post(Config.WINNNING, {
+                    fromAddress: "0xcfd8cbe5da3002b52c650ce1302e10c6d1be644e",
+                    password: "pass0",
+                    pollAddress: pollAddress
+                }).then((response) => {
+                    console.log(response.data)
+                    if (response.status == "200") {
+                        confirm("승자는 " + response.data + " 입니다.")
+                    }
+                }).catch((ex) => (
+                    console.log("result failed : " + ex)
+                ))
             },
             editPhoto: function (no) {
                 eventBus.$emit("editPhoto", no);
@@ -157,7 +175,7 @@
     }
 
     #list th:nth-child(5n), #list td:nth-child(5n) {
-        width: 150px;
+        width: 200px;
     }
 
     #list th {

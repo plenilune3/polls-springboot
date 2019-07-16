@@ -18,5 +18,7 @@ export default {
     //투표 생성
     POLLCREATE: BASE_URL + "/polls/createpoll",
     //투표 하기
-    POLLVOTE: BASE_URL + "/polls/vote"
+    POLLVOTE: BASE_URL + "/polls/vote",
+    //결과 확인
+    WINNNING: BASE_URL + "/polls/winningproposal"
 }
